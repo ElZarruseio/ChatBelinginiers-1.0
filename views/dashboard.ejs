@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('layouts/header.ejs') %>
+    <style>
+        /* Pequeño hack para asegurar que el contenido de la página no esté debajo de la barra de navegación */
+        body { padding-top: 56px; } /* Ajusta esto si tu navbar tiene otra altura */
+        /* Estilos para el espacio inicial del chat */
+        .initial-chat-message {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%; /* Asegura que ocupe todo el espacio disponible */
+            text-align: center;
+            color: #6c757d;
+            font-size: 1.5rem;
+            font-weight: 300;
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('layouts/navbar.ejs') %>
+
+    <div class="d-flex" id="wrapper">
+
+        <div class="bg-dark border-right" id="sidebar-wrapper">
+            <div class="sidebar-heading text-white">Chat-belinginiers 1.0</div>
+            <div class="list-group list-group-flush user-sidebar">
+                <% if(users && users.length > 0) { %>
+                    <% users.forEach(function(user){ %>
+                        <a href="javascript:void(0)" class="list-group-item list-group-item-action bg-dark"
+                            data-id="<%= user._id %>"
+                            data-name="<%= user.name %>"
+                            data-image="<%= user.image %>"
+                        >
+                            <div class="d-flex align-items-center">
+                                <img src="/images/<%= user.image %>" class="rounded-circle user-avatar me-2" alt="Avatar">
+                                <div>
+                                    <h6 class="mb-0 text-white"><%= user.name %></h6>
+                                    <small id="<%= user._id %>-status" class="
+                                        <% if(user.is_online === '1') { %> online-status
+                                        <% } else { %> offline-status
+                                        <% } %>
+                                    ">
+                                        <i class="fas fa-circle"></i>
+                                        <span class="status-text">
+                                            <% if(user.is_online === '1') { %> Conectado
+                                            <% } else { %> Desconectado
+                                            <% } %>
+                                        </span>
+                                    </small>
+                                </div>
+                            </div>
+                        </a>
+                    <% }); %>
+                <% } else { %>
+                    <div class="p-3 text-white-50">No hay usuarios disponibles.</div>
+                <% } %>
+            </div>
+            <div class="list-group-flush sidebar-footer mt-auto">
+                <div class="d-flex justify-content-between align-items-center p-3 profile-info">
+                    <img src="/images/<%= user.image %>" class="rounded-circle user-avatar me-2" alt="Mi Avatar">
+                    <div>
+                        <h5 class="mb-0"><%= user.name %></h5>
+                        <small class="text-white-50">Mi Perfil</small>
+                    </div>
+                </div>
+                <a href="/logout" class="list-group-item list-group-item-action bg-dark text-center">
+                    <button class="btn btn-outline-light w-100"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</button>
+                </a>
+            </div>
+        </div>
+        <div id="page-content-wrapper">
+            <div class="container-fluid py-4">
+                <div class="chat-main-section d-flex flex-column h-100">
+                    <div id="welcome-chat" class="initial-chat-message">
+                        <p class="welcome-heading">Selecciona un usuario para iniciar un chat</p>
+                    </div>
+
+                    <div id="chat-section" class="d-none h-100 flex-column">
+                        <div class="chat-header py-3 px-4 d-flex align-items-center">
+                            <img id="chat-receiver-image" src="" class="rounded-circle user-avatar me-3" alt="Receiver Avatar">
+                            <h5 id="chat-receiver-name" class="mb-0"></h5>
+                        </div>
+                        <div class="chat-messages-box flex-grow-1 overflow-auto p-4" id="chat-container">
+                            </div>
+                        <form id="chat-form" class="chat-input-form p-3">
+                            <input type="text" id="message-input" class="form-control" placeholder="Escribe tu mensaje..." autocomplete="off">
+                            <input type="hidden" id="sender-id" value="<%= user._id %>">
+                            <input type="hidden" id="receiver-id">
+                            <button type="submit" class="btn btn-primary d-flex align-items-center">
+                                <i class="fas fa-paper-plane me-2"></i> Enviar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    <%- include('layouts/footer.ejs') %>
+
+    <script>
+        // CLIENT SIDE JAVASCRIPT
+        $(document).ready(function() {
+            var sender_id = $('#sender-id').val();
+            var receiver_id;
+            var socket = io('/user-namespace', {
+                auth: {
+                    token: sender_id
+                }
+            });
+
+
+            // Función para hacer scroll al final del chat
+            function scrollToBottom() {
+                var chatContainer = $('#chat-container');
+                chatContainer.scrollTop(chatContainer.prop("scrollHeight"));
+            }
+
+            // Función para añadir mensajes al chat
+            function appendMessage(data, isCurrentUser) {
+                var messageClass = isCurrentUser ? 'current-user-chat' : 'distance-user-chat';
+                var html = `<div class="chat-message-bubble ${messageClass}">
+                                <p class="mb-0">${data.message}</p>
+                            </div>`;
+                $('#chat-container').append(html);
+                scrollToBottom();
+            }
+
+
+            // Cargar chats antiguos al seleccionar un usuario
+            $('.list-group-item').click(function() {
+                $('.list-group-item').removeClass('active');
+                $(this).addClass('active');
+
+                receiver_id = $(this).attr('data-id');
+                var receiver_name = $(this).attr('data-name');
+                var receiver_image = $(this).attr('data-image');
+
+                $('#chat-receiver-name').text(receiver_name);
+                $('#chat-receiver-image').attr('src', '/images/' + receiver_image);
+                $('#receiver-id').val(receiver_id);
+
+                $('#welcome-chat').addClass('d-none');
+                $('#chat-section').removeClass('d-none');
+                $('#chat-container').empty(); // Limpiar chat anterior
+
+                // Cargar chats antiguos
+                $.ajax({
+                    url: '/get-old-chats',
+                    method: 'POST',
+                    data: {
+                        sender_id: sender_id,
+                        receiver_id: receiver_id
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            if (res.chats.length > 0) {
+                                res.chats.forEach(function(chat) {
+                                    var isCurrentUser = (chat.sender_id === sender_id);
+                                    appendMessage(chat, isCurrentUser);
+                                });
+                            } else {
+                                $('#chat-container').append('<div class="initial-chat-message"><p>¡Sé el primero en saludar!</p></div>');
+                            }
+                            scrollToBottom(); // Asegúrate de hacer scroll después de cargar
+                        } else {
+                            alert(res.msg);
+                        }
+                    },
+                    error: function(err) {
+                        if (err.responseJSON && err.responseJSON.msg === "Sesión expirada. Por favor inicia sesión de nuevo.") {
+                             window.location.href = '/';
+                        } else {
+                            alert('Error al cargar chats antiguos.');
+                        }
+                    }           
+
+                });
+            });
+
+            // Envío de mensajes de chat
+           $('#chat-form').submit(function(e) {
+    e.preventDefault();
+
+    var message = $('#message-input').val().trim();
+    if (message === '') {
+        return; // No envíes mensajes vacíos
+    }
+
+    if (receiver_id) {
+        // 1. Emitir por Socket.IO para tiempo real
+        socket.emit('newChat', {
+            sender_id: sender_id,
+            receiver_id: receiver_id,
+            message: message
+        });
+
+        // 2. Guardar el chat en la base de datos con AJAX
+        $.ajax({
+            url: '/save-chat', // Asegúrate que esta ruta existe en tu backend
+            method: 'POST',
+            data: {
+                sender_id: sender_id,
+                receiver_id: receiver_id,
+                message: message
+            },
+            success: function(res) {
+                if (!res.success) {
+                    alert('Error al guardar el mensaje: ' + res.msg);
+                }
+                // Si quieres, puedes manejar aquí una confirmación visual
+            },
+            error: function(err) {
+                alert('Error al guardar el mensaje.');
+                console.error(err);
+            }
+        });
+
+        // Añadir el mensaje al chat del remitente inmediatamente
+        appendMessage({
+            message: message
+        }, true);
+
+        $('#message-input').val(''); // Limpiar el input
+    } else {
+        alert('Por favor, selecciona un usuario para chatear.');
+    }
+});
+
+            // Recibir nuevos mensajes
+            socket.on('loadNewChat', function(data) {
+                if (sender_id === data.receiver_id && receiver_id === data.sender_id) {
+                    appendMessage(data, false);
+                }
+            });
+
+            // Manejo de usuarios online/offline
+            socket.on('getOnlineUser', function(data) {
+                $('#' + data.user_id + '-status .status-text').text('Conectado');
+                $('#' + data.user_id + '-status').removeClass('offline-status').addClass('online-status');
+            });
+
+            socket.on('getOfflineUser', function(data) {
+                $('#' + data.user_id + '-status .status-text').text('Desconectado');
+                $('#' + data.user_id + '-status').removeClass('online-status').addClass('offline-status');
+            });
+
+            // Inicializar la lista de usuarios online al conectar
+            socket.on('onlineUsersList', function(data) {
+                data.onlineUserIds.forEach(function(userId) {
+                    $('#' + userId + '-status .status-text').text('Conectado');
+                    $('#' + userId + '-status').removeClass('offline-status').addClass('online-status');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

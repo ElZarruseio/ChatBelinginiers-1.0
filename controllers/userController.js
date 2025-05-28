@@ -14,15 +14,25 @@ const registerLoad = async (req, res) => {
 // Función para manejar el envío del formulario de registro.
 const register = async (req, res) => {
     try {
+        // Validar si los campos esenciales están presentes (incluyendo la imagen si es obligatoria)
+        if (!req.body.name || !req.body.email || !req.body.password) {
+            return res.render("register", { message: "Por favor, completa todos los campos requeridos." });
+        }
+
+     
+        if (!req.file) { // Verifica si no se ha subido ningún archivo
+            return res.render("register", { message: "Por favor, selecciona una imagen de perfil." });
+        }
+        
+
         const passwordHash = await bcrypt.hash(req.body.password, 10); // Encripta la contraseña.
 
-        
-        const imageFileName = req.file ? req.file.filename : ''; // Si hay un archivo, toma el nombre; de lo contrario, cadena vacía.
+        const imageFileName = req.file.filename; // Ahora sabemos que req.file existe
 
         const user = new User({ // Crea una nueva instancia del modelo User.
             name: req.body.name, // Toma el nombre del formulario.
             email: req.body.email, // Toma el correo electrónico del formulario.
-            image: imageFileName, // Utiliza el nombre de archivo corregido (coincide con 'userModel.js').
+            image: imageFileName, // Utiliza el nombre de archivo (ahora es obligatorio).
             password: passwordHash, // Guarda la contraseña encriptada.
             is_online: "0" // Establece el estado inicial como offline.
         });
@@ -31,7 +41,11 @@ const register = async (req, res) => {
 
         res.render("register", { message: "Registro exitoso!" }); // Muestra un mensaje de éxito.
     } catch (error) {
-       
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
+            return res.render("register", { message: "Este correo electrónico ya está registrado. Por favor, utiliza otro." });
+        }
+        console.error("Error durante el registro:", error);
+        res.render("register", { message: "Ocurrió un error durante el registro. Inténtalo de nuevo." });
     }
 }
 

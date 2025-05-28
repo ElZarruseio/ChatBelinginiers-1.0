@@ -8829,13 +8829,91 @@ body {
     border: 2px solid #007bff; /* Borde azul para el avatar */
 }
 
-/* --- Estilos del Dashboard (sidebar y contenido principal) --- */
-
-#wrapper {
-    display: flex; /* Utiliza flexbox para layout horizontal */
-    min-height: 100vh; /* Asegura que el contenedor ocupe al menos toda la altura de la vista */
-    padding-top: 56px; /* Para dejar espacio a la navbar fija superior */
+/* --- Estilos para el Área de Chat --- */
+.chat-main-section {
+    border: 1px solid #dee2e6; /* Borde para la caja de chat */
+    border-radius: 8px; /* Bordes redondeados */
+    background-color: #fff;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05); /* Sombra suave */
+    height: 100%; /* Ocupa la altura del padre */
+    overflow: hidden; /* Para contener los mensajes y el input */
 }
+
+.chat-header {
+    background-color: #e9ecef; /* Fondo claro para el encabezado del chat */
+    padding: 15px 20px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    color: #343a40;
+}
+
+.chat-header .user-avatar {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 50%; /* Asegura que sea circular */
+    border: 2px solid #007bff;
+}
+
+.chat-messages-box {
+    padding: 20px;
+    flex-grow: 1; /* Hace que ocupe todo el espacio disponible */
+    overflow-y: auto; /* Scroll para los mensajes */
+    display: flex; /* Para organizar los mensajes */
+    flex-direction: column; /* Apilarlos verticalmente */
+}
+
+.initial-chat-message {
+    text-align: center;
+    color: #6c757d;
+    margin-top: 50px;
+}
+
+.chat-message-bubble {
+    padding: 10px 15px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+.current-user-chat {
+    background-color: #007bff; /* Azul para mensajes propios */
+    color: white;
+    align-self: flex-end; /* Alinea a la derecha */
+    border-bottom-right-radius: 5px; /* Quita el redondeo de la esquina inferior derecha */
+}
+
+.distance-user-chat {
+    background-color: #e2e6ea; /* Gris claro para mensajes de otros */
+    color: #343a40;
+    align-self: flex-start; /* Alinea a la izquierda */
+    border-bottom-left-radius: 5px; /* Quita el redondeo de la esquina inferior izquierda */
+}
+
+.chat-input-form {
+    display: flex;
+    padding: 15px 20px;
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa; /* Fondo claro para el área de input */
+}
+
+.chat-input-form .form-control {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    border-radius: 20px;
+    margin-right: 10px;
+    padding: 10px 15px;
+}
+
+.chat-input-form .btn-primary {
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+/* --- Estilos del Dashboard (sidebar y contenido principal) --- */
 
 #sidebar-wrapper {
     min-height: 100vh; /* El sidebar ocupa toda la altura de la vista */
@@ -8923,421 +9001,6 @@ body {
     border-radius: 50%; /* Asegura que sea circular */
     border: 2px solid #007bff;
     margin-right: 15px;
-}
-
-/* --- Estilos para el Área de Chat --- */
-.chat-main-section {
-    border: 1px solid #dee2e6; /* Borde para la caja de chat */
-    border-radius: 8px; /* Bordes redondeados */
-    background-color: #fff;
-    box-shadow: 0 0 15px rgba(0,0,0,0.05); /* Sombra suave */
-    height: 100%; /* Ocupa la altura del padre */
-    overflow: hidden; /* Para contener los mensajes y el input */
-}
-
-.chat-header {
-    background-color: #e9ecef; /* Fondo claro para el encabezado del chat */
-    padding: 15px 20px;
-    border-bottom: 1px solid #dee2e6;
-    display: flex;
-    align-items: center;
-    font-weight: bold;
-    color: #343a40;
-}
-
-.chat-header .user-avatar {
-    width: 45px;
-    height: 45px;
-    object-fit: cover;
-    border-radius: 50%; /* Asegura que sea circular */
-    border: 2px solid #007bff;
-}
-
-.chat-messages-box {
-    padding: 20px;
-    flex-grow: 1; /* Hace que ocupe todo el espacio disponible */
-    overflow-y: auto; /* Scroll para los mensajes */
-    display: flex; /* Para organizar los mensajes */
-    flex-direction: column; /* Apilarlos verticalmente */
-}
-
-.initial-chat-message {
-    text-align: center;
-    color: #6c757d;
-    margin-top: 50px;
-}
-
-.chat-message-bubble {
-    padding: 10px 15px;
-    border-radius: 20px;
-    margin-bottom: 10px;
-    max-width: 70%;
-    word-wrap: break-word;
-}
-
-.current-user-chat {
-    background-color: #007bff; /* Azul para mensajes propios */
-    color: white;
-    align-self: flex-end; /* Alinea a la derecha */
-    border-bottom-right-radius: 5px; /* Quita el redondeo de la esquina inferior derecha */
-}
-
-.distance-user-chat {
-    background-color: #e2e6ea; /* Gris claro para mensajes de otros */
-    color: #343a40;
-    align-self: flex-start; /* Alinea a la izquierda */
-    border-bottom-left-radius: 5px; /* Quita el redondeo de la esquina inferior izquierda */
-}
-
-.chat-input-form {
-    display: flex;
-    padding: 15px 20px;
-    border-top: 1px solid #dee2e6;
-    background-color: #f8f9fa; /* Fondo claro para el área de input */
-}
-
-.chat-input-form .form-control {
-    flex-grow: 1; /* Ocupa el espacio restante */
-    border-radius: 20px;
-    margin-right: 10px;
-    padding: 10px 15px;
-}
-
-.chat-input-form .btn-primary {
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-size: 1rem;
-}
-
-
-@media (min-width: 992px) { /* A partir del breakpoint 'lg' de Bootstrap (escritorios) */
-    #sidebar-wrapper {
-        margin-left: 0; /* Asegura que el sidebar esté siempre visible en pantallas grandes */
-        position: relative; /* Vuelve a la posición normal dentro del flujo del documento */
-        height: auto; /* Altura automática */
-        top: auto; /* Elimina la posición 'top' fija */
-        left: auto; /* Elimina la posición 'left' fija */
-        box-shadow: none; /* Elimina la sombra */
-    }
-
-    #page-content-wrapper {
-        min-width: 0; /* Reinicia el min-width para que el contenido se ajuste dinámicamente */
-        width: 100%; /* Ocupa el 100% del espacio restante después del sidebar */
-    }
-
-    #wrapper.toggled #sidebar-wrapper {
-        margin-left: 0; /* Sin efecto en desktop */
-    }
-
-    #wrapper.toggled #page-content-wrapper {
-        min-width: 0; /* Sin efecto en desktop */
-        margin-left: 0; /* Sin efecto en desktop */
-    }
-}/* --- Estilos Globales y de Formularios (Login/Register) --- */
-body {
-    font-family: 'Inter', sans-serif; /* Fuente de texto para todo el cuerpo */
-    background-color: #f0f2f5; /* Color de fondo general de la página */
-    margin: 0; /* Elimina el margen predeterminado del body */
-    padding-top: 56px; /* Deja espacio en la parte superior para la navbar fija */
-    box-sizing: border-box; /* Incluye padding y border en el ancho/alto total de los elementos */
-}
-
-/* Estilos para los contenedores de formularios (Login y Register) */
-.form-container {
-    background-color: #ffffff; /* Fondo blanco */
-    padding: 2.5rem; /* Relleno interno */
-    border-radius: 12px; /* Bordes redondeados */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    width: 100%; /* Ocupa el 100% del ancho disponible */
-    max-width: 450px; /* Ancho máximo del formulario */
-    text-align: center; /* Centra el texto */
-    margin: 2rem auto; /* Margen superior/inferior y centrado horizontalmente */
-}
-
-/* Mensajes de error */
-.message-error {
-    color: #dc3545; /* Rojo de Bootstrap para errores */
-    font-weight: 500; /* Grosor de la fuente */
-    margin-bottom: 1rem; /* Margen inferior */
-}
-
-/* Títulos de los formularios */
-.form-container h1 {
-    margin-bottom: 2rem; /* Margen inferior del título */
-    color: #333; /* Color de texto oscuro */
-    font-weight: 700; /* Grosor de la fuente */
-}
-
-/* Estilos para campos de formulario */
-.form-control {
-    border-radius: 8px; /* Bordes redondeados para inputs */
-    padding: 0.8rem 1rem; /* Relleno interno de los inputs */
-    margin-bottom: 1.2rem; /* Margen inferior entre inputs */
-    border: 1px solid #ced4da; /* Borde suave */
-    width: 100%; /* Ancho completo */
-}
-
-.form-control:focus {
-    border-color: #007bff; /* Borde azul al enfocar */
-    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25); /* Sombra al enfocar */
-}
-
-/* Estilos para botones primarios (por ejemplo, Registrarse, Iniciar Sesión) */
-.btn-primary {
-    background-color: #007bff; /* Azul primario de Bootstrap */
-    border-color: #007bff; /* Borde del mismo color */
-    color: white; /* Texto blanco */
-    width: 100%; /* Ancho completo del botón */
-    padding: 0.8rem 1rem; /* Relleno */
-    border-radius: 8px; /* Bordes redondeados */
-    font-size: 1.1rem; /* Tamaño de fuente */
-    font-weight: 600; /* Grosor de fuente */
-    cursor: pointer; /* Cursor de puntero */
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; /* Transición suave */
-}
-
-.btn-primary:hover {
-    background-color: #0056b3; /* Azul más oscuro al pasar el mouse */
-    border-color: #0056b3;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada al pasar el mouse */
-}
-
-/* Estilos para enlaces de formulario (¿Ya tienes cuenta?, ¿No tienes cuenta?) */
-.form-link {
-    display: block; /* Para que ocupe su propia línea */
-    margin-top: 1.5rem;
-    color: #007bff;
-    text-decoration: none; /* Sin subrayado por defecto */
-    font-weight: 500;
-}
-
-.form-link:hover {
-    text-decoration: underline; /* Subrayado al pasar el mouse */
-}
-
-/* Estilos específicos para el campo de carga de imagen */
-.file-input-wrapper {
-    position: relative;
-    overflow: hidden; /* Oculta el input de archivo original */
-    display: block; /* Ocupa todo el ancho disponible */
-    margin-bottom: 1.2rem;
-}
-
-.file-input-wrapper input[type="file"] {
-    font-size: 100px; /* Grande para que sea fácil de clickear */
-    position: absolute;
-    left: 0;
-    top: 0;
-    opacity: 0; /* Hace el input invisible */
-    cursor: pointer;
-    width: 100%; /* Para que el área clickeable ocupe todo el botón simulado */
-    height: 100%; /* Para que el área clickeable ocupe todo el botón simulado */
-}
-
-.file-input-wrapper .btn-upload {
-    display: flex; /* Para centrar contenido */
-    align-items: center; /* Alineación vertical */
-    justify-content: center; /* Alineación horizontal */
-    padding: 0.8rem 1rem;
-    border-radius: 8px;
-    border: 1px solid #ced4da;
-    background-color: #f8f9fa; /* Fondo gris claro */
-    color: #495057; /* Color de texto */
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.file-input-wrapper .btn-upload:hover {
-    background-color: #e2e6ea;
-    border-color: #c1c7cd;
-}
-
-.file-input-wrapper .btn-upload i {
-    margin-right: 8px; /* Espacio entre el icono y el texto */
-}
-
-/* Avatar de usuario pequeño en navbar o lista */
-.user-avatar-small {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #007bff; /* Borde azul para el avatar */
-}
-
-/* --- Estilos del Dashboard (sidebar y contenido principal) --- */
-
-
-#sidebar-wrapper {
-    min-height: 100vh; /* El sidebar ocupa toda la altura de la vista */
-    margin-left: -15rem; /* Inicialmente oculto (15rem es el ancho del sidebar) */
-    transition: margin .25s ease-out; /* Transición suave para el efecto de mostrar/ocultar */
-    width: 15rem; /* Ancho del sidebar */
-    background-color: #343a40; /* Fondo oscuro (color dark de Bootstrap) */
-    color: white;
-    position: fixed; /* Fijo en la pantalla */
-    top: 56px; /* Debajo de la navbar */
-    left: 0; /* Pegado a la izquierda */
-    z-index: 1000; /* Asegura que esté por encima de otros elementos */
-    box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* Sombra para diferenciarlo */
-    display: flex;
-    flex-direction: column; /* Para organizar el contenido verticalmente */
-}
-
-#wrapper.toggled #sidebar-wrapper {
-    margin-left: 0; /* Cuando la clase 'toggled' se añade, el sidebar se mueve a la posición visible */
-}
-
-#wrapper.toggled #page-content-wrapper {
-    min-width: calc(100vw - 15rem); /* Ajusta el ancho cuando el sidebar está abierto en móviles */
-}
-
-/* Estilos específicos del sidebar */
-.sidebar-heading {
-    padding: 0.875rem 1.25rem;
-    font-size: 1.2rem;
-    background-color: #212529; /* Un tono más oscuro para el encabezado del sidebar */
-    font-weight: bold;
-    color: white;
-    text-align: center;
-}
-
-.user-sidebar {
-    flex-grow: 1; /* Permite que la lista de usuarios ocupe el espacio disponible */
-    overflow-y: auto; /* Habilita el scroll si hay muchos usuarios */
-}
-
-.user-list-item {
-    cursor: pointer;
-    border-bottom: 1px solid rgba(255,255,255,0.1); /* Separador sutil */
-}
-
-.user-list-item:hover {
-    background-color: #495057 !important; /* Oscurece al pasar el mouse */
-}
-
-.user-list-item img.user-avatar {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 50%; /* Asegura que sea circular */
-    border: 2px solid #007bff; /* Borde alrededor del avatar */
-}
-
-.online-status {
-    color: #28a745; /* Verde para online */
-    font-size: 0.8em;
-}
-
-.offline-status {
-    color: #6c757d; /* Gris para offline */
-    font-size: 0.8em;
-}
-
-.online-status .fa-circle, .offline-status .fa-circle {
-    font-size: 0.6em; /* Tamaño del círculo de estado */
-    margin-right: 5px;
-}
-
-.sidebar-footer {
-    padding: 1rem;
-    background-color: #212529; /* Color más oscuro para el pie del sidebar */
-    color: white;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    align-items: center; /* Alineación vertical */
-}
-
-.sidebar-footer .user-avatar {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 50%; /* Asegura que sea circular */
-    border: 2px solid #007bff;
-    margin-right: 15px;
-}
-
-/* --- Estilos para el Área de Chat --- */
-.chat-main-section {
-    border: 1px solid #dee2e6; /* Borde para la caja de chat */
-    border-radius: 8px; /* Bordes redondeados */
-    background-color: #fff;
-    box-shadow: 0 0 15px rgba(0,0,0,0.05); /* Sombra suave */
-    height: 100%; /* Ocupa la altura del padre */
-    overflow: hidden; /* Para contener los mensajes y el input */
-}
-
-.chat-header {
-    background-color: #e9ecef; /* Fondo claro para el encabezado del chat */
-    padding: 15px 20px;
-    border-bottom: 1px solid #dee2e6;
-    display: flex;
-    align-items: center;
-    font-weight: bold;
-    color: #343a40;
-}
-
-.chat-header .user-avatar {
-    width: 45px;
-    height: 45px;
-    object-fit: cover;
-    border-radius: 50%; /* Asegura que sea circular */
-    border: 2px solid #007bff;
-}
-
-.chat-messages-box {
-    padding: 20px;
-    flex-grow: 1; /* Hace que ocupe todo el espacio disponible */
-    overflow-y: auto; /* Scroll para los mensajes */
-    display: flex; /* Para organizar los mensajes */
-    flex-direction: column; /* Apilarlos verticalmente */
-}
-
-.initial-chat-message {
-    text-align: center;
-    color: #6c757d;
-    margin-top: 50px;
-}
-
-.chat-message-bubble {
-    padding: 10px 15px;
-    border-radius: 20px;
-    margin-bottom: 10px;
-    max-width: 70%;
-    word-wrap: break-word;
-}
-
-.current-user-chat {
-    background-color: #007bff; /* Azul para mensajes propios */
-    color: white;
-    align-self: flex-end; /* Alinea a la derecha */
-    border-bottom-right-radius: 5px; /* Quita el redondeo de la esquina inferior derecha */
-}
-
-.distance-user-chat {
-    background-color: #e2e6ea; /* Gris claro para mensajes de otros */
-    color: #343a40;
-    align-self: flex-start; /* Alinea a la izquierda */
-    border-bottom-left-radius: 5px; /* Quita el redondeo de la esquina inferior izquierda */
-}
-
-.chat-input-form {
-    display: flex;
-    padding: 15px 20px;
-    border-top: 1px solid #dee2e6;
-    background-color: #f8f9fa; /* Fondo claro para el área de input */
-}
-
-.chat-input-form .form-control {
-    flex-grow: 1; /* Ocupa el espacio restante */
-    border-radius: 20px;
-    margin-right: 10px;
-    padding: 10px 15px;
-}
-
-.chat-input-form .btn-primary {
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-size: 1rem;
 }
 
 /* Media Queries para Responsividad */

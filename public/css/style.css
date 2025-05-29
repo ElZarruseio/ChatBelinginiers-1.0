@@ -9019,7 +9019,7 @@ body {
     }
 
     #page-content-wrapper {
-        min-width: 100vw; /* El contenido principal ocupa el 100% del ancho de la vista */
+        min-width: 50vw; /* El contenido principal ocupa el 100% del ancho de la vista */
         flex-grow: 1; /* Permite que ocupe el espacio restante */
     }
 
@@ -9072,7 +9072,7 @@ input::placeholder {
 }
 
 #chat-container {
-    height: 400px; /* o el tamaño que prefieras */
+    height: 300px; /* o el tamaño que prefieras */
     overflow-y: auto;
 }
 
@@ -9090,7 +9090,7 @@ html, body {
 }
 
 #sidebar-wrapper {
-  width: 250px;               /* Ancho fijo para sidebar */
+  width: 200px;               /* Ancho fijo para sidebar */
   height: 100vh;              /* Altura completa */
   overflow-y: auto;           /* Scroll vertical si el contenido es mayor */
   position: fixed;            /* Fijo a la izquierda */

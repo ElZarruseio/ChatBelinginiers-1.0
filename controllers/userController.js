@@ -1,149 +1,145 @@
-const User = require("../models/userModel"); // Importa el modelo de usuario
-const Chat = require("../models/chatModel"); // Importa el modelo de Chat
-const bcrypt = require("bcrypt"); // Importa la librería bcrypt para encriptar contraseñas.
+const User = require("../models/userModel");
+const Chat = require("../models/chatModel");
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
-// Función para cargar y mostrar la página de registro.
 const registerLoad = async (req, res) => {
     try {
-        res.render("register"); // Renderiza el archivo 'register.ejs'.
+        res.render("register");
     } catch (error) {
-        console.log(error.message); // Si hay un error, lo muestra en la consola.
+        console.log(error.message);
     }
-}
+};
 
-// Función para manejar el envío del formulario de registro.
 const register = async (req, res) => {
     try {
-        // Validar si los campos esenciales están presentes (incluyendo la imagen si es obligatoria)
-        if (!req.body.name || !req.body.email || !req.body.password) {
-            return res.render("register", { message: "Por favor, completa todos los campos requeridos." });
+        if (!req.body.name || !req.body.email || !req.body.password || !req.file) {
+            return res.render("register", { message: "Completa todos los campos requeridos, incluyendo la imagen." });
         }
 
-     
-        if (!req.file) { // Verifica si no se ha subido ningún archivo
-            return res.render("register", { message: "Por favor, selecciona una imagen de perfil." });
-        }
-        
-
-        const passwordHash = await bcrypt.hash(req.body.password, 10); // Encripta la contraseña.
-
-        const imageFileName = req.file.filename; // Ahora sabemos que req.file existe
-
-        const user = new User({ // Crea una nueva instancia del modelo User.
-            name: req.body.name, // Toma el nombre del formulario.
-            email: req.body.email, // Toma el correo electrónico del formulario.
-            image: imageFileName, // Utiliza el nombre de archivo (ahora es obligatorio).
-            password: passwordHash, // Guarda la contraseña encriptada.
-            is_online: "0" // Establece el estado inicial como offline.
+        const passwordHash = await bcrypt.hash(req.body.password, 10);
+        const user = new User({
+            name: req.body.name,
+            email: req.body.email,
+            image: req.file.filename,
+            password: passwordHash,
+            is_online: "0"
         });
 
-        await user.save(); // Guarda el nuevo usuario en la base de datos.
-
-        res.render("register", { message: "Registro exitoso!" }); // Muestra un mensaje de éxito.
+        await user.save();
+        res.render("register", { message: "Registro exitoso!" });
     } catch (error) {
-        if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
-            return res.render("register", { message: "Este correo electrónico ya está registrado. Por favor, utiliza otro." });
+        if (error.code === 11000 && error.keyPattern?.email) {
+            return res.render("register", { message: "Este correo ya está registrado." });
         }
-        console.error("Error durante el registro:", error);
-        res.render("register", { message: "Ocurrió un error durante el registro. Inténtalo de nuevo." });
+        console.error("Error en el registro:", error);
+        res.render("register", { message: "Error durante el registro." });
     }
-}
+};
 
-// Función para cargar y mostrar la página de inicio de sesión.
 const loadLogin = async (req, res) => {
     try {
-        res.render("login"); // Renderiza el archivo 'login.ejs'.
+        res.render("login");
     } catch (error) {
-        console.log(error.message); // Si hay un error, lo muestra en la consola.
+        console.log(error.message);
     }
-}
+};
 
-// Función para manejar el envío del formulario de inicio de sesión.
 const login = async (req, res) => {
     try {
-        const email = req.body.email; // Obtiene el correo electrónico.
-        const password = req.body.password; // Obtiene la contraseña.
+        const { email, password } = req.body;
+        const userData = await User.findOne({ email });
 
-        const userData = await User.findOne({ email: email }); // Busca un usuario por correo electrónico.
-
-        if (userData) { // Si se encuentra un usuario.
-            const passwordMatch = await bcrypt.compare(password, userData.password); // Compara contraseñas.
-
-            if (passwordMatch) { // Si las contraseñas coinciden.
-                req.session.user_id = userData._id; // Guarda el ID del usuario en la sesión.
-                req.session.user = userData; // Guarda el objeto user completo en la sesión para acceso en las vistas.
-                res.redirect("/dashboard"); // Redirige al dashboard.
-            } else { // Si las contraseñas no coinciden.
-                res.render("login", { message: "Contraseña incorrecta" }); // Muestra un mensaje de error.
-            }
-        } else { // Si no se encuentra el usuario.
-            res.render("login", { message: "Correo electrónico no encontrado" }); // Muestra un mensaje de error.
+        if (userData && await bcrypt.compare(password, userData.password)) {
+            req.session.user_id = userData._id;
+            req.session.user = userData;
+            return res.redirect("/dashboard");
         }
-    } catch (error) {
-        console.log(error.message); // Si hay un error, lo muestra en la consola.
-        res.render("login", { message: "Ocurrió un error al iniciar sesión" }); // Muestra un mensaje de error genérico.
-    }
-}
 
-// Función para cerrar la sesión del usuario.
+        res.render("login", { message: "Correo o contraseña incorrectos." });
+    } catch (error) {
+        console.log(error.message);
+        res.render("login", { message: "Ocurrió un error al iniciar sesión." });
+    }
+};
+
 const logout = async (req, res) => {
     try {
-        if (req.session.user_id) { // Verifica si hay un ID de usuario en la sesión.
-            // Opcional: Actualiza el estado is_online a '0' en la base de datos al cerrar sesión.
-            await User.findByIdAndUpdate({ _id: req.session.user_id }, { $set: { is_online: "0" } });
+        if (req.session.user_id) {
+            await User.findByIdAndUpdate(req.session.user_id, { is_online: "0" });
         }
-        req.session.destroy(); // Elimina la información del usuario de la sesión.
-        res.redirect("/"); // Redirige a la página principal.
+        req.session.destroy();
+        res.redirect("/");
     } catch (error) {
-        console.log(error.message); // Si hay un error, lo muestra en la consola.
+        console.log(error.message);
     }
-}
+};
 
-// Función para cargar y mostrar la página del panel de control (dashboard).
 const loadDashboard = async (req, res) => {
     try {
-        // Asegúrate de que el ID del usuario está disponible en la sesión.
-        if (!req.session.user_id) {
-            return res.redirect('/login'); // Redirige si no hay sesión.
-        }
+        if (!req.session.user_id) return res.redirect("/login");
 
-        // Obtener los datos del usuario logueado de la base de datos para asegurar que estén actualizados.
         const loggedInUser = await User.findById(req.session.user_id);
-        
         if (!loggedInUser) {
-            // Si por alguna razón el usuario no se encuentra en la DB, cierra la sesión y redirige.
             req.session.destroy();
-            return res.redirect('/login');
+            return res.redirect("/login");
         }
 
-        // Obtener todos los demás usuarios (excluyendo al usuario logueado).
-        var users = await User.find({ _id: { $nin: [loggedInUser._id] } });
-
-        // Pasa el objeto user (con los datos frescos de la BD) y la lista de usuarios.
-        res.render("dashboard", { user: loggedInUser, users: users }); // Renderiza el 'dashboard.ejs'.
+        const users = await User.find({ _id: { $ne: loggedInUser._id } });
+        res.render("dashboard", { user: loggedInUser, users });
     } catch (error) {
-        console.log(error.message); // Si hay un error, lo muestra en la consola.
-        res.status(500).send('Error interno del servidor al cargar el dashboard.'); // Mensaje de error más específico.
+        console.log(error.message);
+        res.status(500).send("Error interno al cargar el dashboard.");
     }
-}
+};
 
-const saveChat = async(req,res) => {
+const saveChat = async (req, res) => {
     try {
-        var chat = new Chat ({ // Crea una nueva instancia del modelo Chat.
-            sender_id:req.body.sender_id, // Toma el ID del remitente.
-            receiver_id:req.body.receiver_id, // Toma el ID del receptor.
-            message:req.body.message, // Toma el mensaje.
-        });
+        const { sender_id, receiver_id, message } = req.body;
 
-        var newChat = await chat.save(); // Guarda el nuevo chat.
-        res.status(200).send({ success: true, msg:"Chat guardado", data:newChat}); // Envía una respuesta de éxito.
+        if (!sender_id || !receiver_id || !message) {
+            return res.status(400).send({ success: false, msg: 'Faltan datos requeridos' });
+        }
 
+        if (!mongoose.Types.ObjectId.isValid(sender_id) || !mongoose.Types.ObjectId.isValid(receiver_id)) {
+            return res.status(400).send({ success: false, msg: 'IDs inválidos' });
+        }
+
+        // Ignora el _id si es un valor temporal enviado desde el cliente (como "local-...")
+        if (req.body._id && typeof req.body._id === 'string' && req.body._id.startsWith('local-')) {
+            delete req.body._id;
+        }
+
+        const chat = new Chat({ sender_id, receiver_id, message });
+        const newChat = await chat.save();
+
+        res.status(200).send({ success: true, msg: "Chat guardado", data: newChat });
     } catch (error) {
-        res.status(400).send({ success: false, msg:error.message}); // Envía una respuesta de error.
+        res.status(400).send({ success: false, msg: error.message });
     }
-}
+};
 
-// Exporta las funciones para que puedan ser utilizadas en otros archivos.
+
+   
+
+const deleteChat = async (req, res) => {
+  try {
+    //console.log("Body recibido:", req.body); // Depuración clave
+    const messageId = req.body.message_id;
+    if (!messageId) {
+      return res.status(400).send({ success: false, msg: "ID de mensaje faltante" });
+    }
+    const result = await Chat.deleteOne({ _id: messageId });
+    //console.log("Resultado de deleteOne:", result); // Depuración
+    res.status(200).send({ success: true });
+  } catch (error) {
+    //console.error("Error en deleteChat:", error); // Depuración
+    res.status(400).send({ success: false, msg: error.message });
+  }
+};
+
+
+
 module.exports = {
     registerLoad,
     register,
@@ -151,5 +147,6 @@ module.exports = {
     login,
     logout,
     loadDashboard,
-    saveChat
-}
+    saveChat,
+    deleteChat
+};

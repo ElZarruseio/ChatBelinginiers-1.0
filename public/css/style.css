@@ -8366,13 +8366,14 @@ body {
 #sidebar-wrapper {
     min-height: 100vh;
     margin-left: -15rem;
+    margin-top: 56px; 
     transition: margin 0.25s ease-out;
     width: 15rem;
-    background-color: var(--dark-blue); /* Fondo oscuro para el sidebar */
-    box-shadow: 2px 0 5px var(--shadow-color); /* Sombra para el sidebar */
+    background-color: var(--dark-blue);
+    box-shadow: 2px 0 5px var(--shadow-color);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex; /* Para poner el footer al final */
-    flex-direction: column; /* Para poner el footer al final */
+    display: flex;
+    flex-direction: column;
 }
 
 #sidebar-wrapper .sidebar-heading {
@@ -8863,20 +8864,13 @@ body {
     overflow-y: auto; /* Scroll para los mensajes */
     display: flex; /* Para organizar los mensajes */
     flex-direction: column; /* Apilarlos verticalmente */
+    
 }
 
 .initial-chat-message {
     text-align: center;
     color: #6c757d;
     margin-top: 50px;
-}
-
-.chat-message-bubble {
-    padding: 10px 15px;
-    border-radius: 20px;
-    margin-bottom: 10px;
-    max-width: 70%;
-    word-wrap: break-word;
 }
 
 .current-user-chat {
@@ -8919,7 +8913,7 @@ body {
     min-height: 100vh; /* El sidebar ocupa toda la altura de la vista */
     margin-left: -15rem; /* Inicialmente oculto (15rem es el ancho del sidebar) */
     transition: margin .25s ease-out; /* Transición suave para el efecto de mostrar/ocultar */
-    width: 15rem; /* Ancho del sidebar */
+    width: 30rem; /* Ancho del sidebar */
     background-color: #343a40; /* Fondo oscuro (color dark de Bootstrap) */
     color: white;
     position: fixed; /* Fijo en la pantalla */
@@ -8929,6 +8923,7 @@ body {
     box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* Sombra para diferenciarlo */
     display: flex;
     flex-direction: column; /* Para organizar el contenido verticalmente */
+    
 }
 
 #wrapper.toggled #sidebar-wrapper {
@@ -8992,6 +8987,8 @@ body {
     color: white;
     border-top: 1px solid rgba(255,255,255,0.1);
     align-items: center; /* Alineación vertical */
+        height: calc(45vh - 20px); /* Resta la altura de la navbar */
+
 }
 
 .sidebar-footer .user-avatar {
@@ -9080,6 +9077,7 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 #wrapper {
@@ -9101,11 +9099,56 @@ html, body {
 }
 
 #page-content-wrapper {
-  margin-left: 250px;         /* Deja espacio para el sidebar */
+  margin-left: 300px;         /* Deja espacio para el sidebar */
   height: 100vh;              /* Altura completa */
-  overflow-y: auto;           /* Scroll vertical si el contenido es largo */
+  overflow-y: hidden;           /* Scroll vertical si el contenido es largo */
   flex-grow: 1;               /* Ocupa todo el espacio disponible */
   background-color: #f8f9fa;  /* Fondo claro para el contenido */
   padding: 20px;              /* Espaciado interno */
+  display: flex;
+  justify-content: center;  /* Centra horizontalmente */
+  align-items: center;      /* Centra verticalmente */
+  min-height: 100vh;        /* Ocupa toda la altura de la ventana */
 }
 
+
+
+.message-row {
+    align-items: center; /* Alinea verticalmente los elementos (burbuja e ícono) */
+    gap: 10px; /* Espacio entre la burbuja del mensaje y el ícono */
+}
+
+/* Estilos para el icono de la papelera */
+.delete-chat-icon {
+    cursor: pointer; /* Muestra un puntero al pasar el ratón */
+    color: #dc3545; /* Color rojo (danger de Bootstrap) para el icono de borrar */
+    font-size: 0.9em; /* Ajusta el tamaño si es necesario */
+    opacity: 0; /* Oculta el icono por defecto */
+    transition: opacity 0.2s ease-in-out; /* Transición suave para la visibilidad */
+}
+
+/* Muestra el icono al pasar el ratón sobre la fila del mensaje */
+.message-row:hover .delete-chat-icon {
+    opacity: 1; /* Hace el icono visible al pasar el ratón */
+}
+
+/* Puedes descomentar esto si quieres que el icono siempre esté visible */
+/* .delete-chat-icon {
+    opacity: 1;
+} */
+
+
+.current-user-chat {
+    background-color: #007bff; /* Azul de Bootstrap */
+    color: white;
+    margin-left: auto; /* Empuja el mensaje del usuario actual a la derecha */
+}
+
+.distance-user-chat {
+    background-color: #e2e6ea; /* Gris claro */
+    color: #343a40;
+    margin-right: auto; /* Empuja el mensaje del otro usuario a la izquierda */
+}
+.fa-trash{
+  color: red;
+}

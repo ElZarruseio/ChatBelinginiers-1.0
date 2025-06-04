@@ -1,397 +1,457 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
+  <head>
     <%- include('layouts/header.ejs') %>
-</head>
-<body>
+  </head>
+  <body>
+    <%- include('layouts/navbar.ejs') %>
 
-<%- include('layouts/navbar.ejs') %>
-
-<div class="d-flex" id="wrapper">
-
-    <div class="bg-dark border-right" id="sidebar-wrapper">
+    <div class="d-flex" id="wrapper">
+      <div class="bg-dark border-right" id="sidebar-wrapper">
         <div class="list-group list-group-flush user-sidebar">
-            <% if(users && users.length > 0) { %>
-                <% users.forEach(function(u){ %>
-                    <a href="javascript:void(0)" class="list-group-item list-group-item-action bg-dark"
-                        data-id="<%= u._id %>"
-                        data-name="<%= u.name %>"
-                        data-image="<%= u.image %>">
-                        <div class="d-flex align-items-center">
-                            <img src="/images/<%= u.image %>" class="rounded-circle user-avatar me-2" alt="Avatar">
-                            <div>
-                                <h6 class="mb-0 text-white"><%= u.name %></h6>
-                                <small id="<%= u._id %>-status" class="
-                                    <% if(u.is_online === '1') { %> online-status
-                                    <% } else { %> offline-status
-                                    <% } %>">
-                                    <i class="fas fa-circle"></i>
-                                    <span class="status-text">
-                                        <% if(u.is_online === '1') { %> Conectado
-                                        <% } else { %> Desconectado
-                                        <% } %>
-                                    </span>
-                                </small>
-                            </div>
-                        </div>
-                    </a>
-                <% }); %>
-            <% } else { %>
-                <div class="p-3 text-white-50">No hay usuarios disponibles.</div>
-            <% } %>
+          <% if(users && users.length > 0) { %> <% users.forEach(function(u){ %>
+          <a
+            href="javascript:void(0)"
+            class="list-group-item list-group-item-action bg-dark"
+            data-id="<%= u._id %>"
+            data-name="<%= u.name %>"
+            data-image="<%= u.image %>"
+          >
+            <div class="d-flex align-items-center">
+              <img
+                src="/images/<%= u.image %>"
+                class="rounded-circle user-avatar me-2"
+                alt="Avatar"
+              />
+              <div>
+                <h6 class="mb-0 text-white"><%= u.name %></h6>
+                <small
+                  id="<%= u._id %>-status"
+                  class="<% if(u.is_online === '1') { %> online-status <% } else { %> offline-status <% } %>"
+                >
+                  <i class="fas fa-circle"></i>
+                  <span class="status-text">
+                    <% if(u.is_online === '1') { %> Conectado <% } else { %>
+                    Desconectado <% } %>
+                  </span>
+                </small>
+              </div>
+            </div>
+          </a>
+          <% }); %> <% } else { %>
+          <div class="p-3 text-white-50">No hay usuarios disponibles.</div>
+          <% } %>
         </div>
 
         <div class="list-group-flush sidebar-footer mt-auto">
-            <div class="d-flex justify-content-between align-items-center p-3 profile-info">
-                <img src="/images/<%= user.image %>" class="rounded-circle user-avatar me-2" alt="Mi Avatar">
-                <div>
-                    <h5 class="mb-0 text-white"><%= user.name %></h5>
-                    <small class="text-white-50">Mi Perfil</small>
-                </div>
+          <div
+            class="d-flex justify-content-between align-items-center p-3 profile-info"
+          >
+            <img
+              src="/images/<%= user.image %>"
+              class="rounded-circle user-avatar me-2"
+              alt="Mi Avatar"
+            />
+            <div>
+              <h5 class="mb-0 text-white"><%= user.name %></h5>
+              <small class="text-white-50">Mi Perfil</small>
             </div>
-            <a href="/logout" class="list-group-item list-group-item-action bg-dark text-center">
-                <button class="btn btn-outline-light w-100"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</button>
-            </a>
+          </div>
+          <a
+            href="/logout"
+            class="list-group-item list-group-item-action bg-dark text-center"
+          >
+            <button class="btn btn-outline-light w-100">
+              <i class="fas fa-sign-out-alt me-2"></i> SALIR
+            </button>
+          </a>
         </div>
-    </div>
-    <div id="page-content-wrapper">
-        <div class="container-fluid py-4">
-            <div class="chat-main-section d-flex flex-column h-100">
-                <div id="welcome-chat" class="initial-chat-message">
-                    <p class="welcome-heading">Selecciona un usuario para iniciar un chat</p>
-                </div>
-
-                <div id="chat-section" class="d-none h-100 flex-column">
-                    <div class="chat-header py-3 px-4 d-flex align-items-center bg-light border-bottom">
-                        <img id="chat-receiver-image" src="" class="rounded-circle user-avatar me-3" alt="Receiver Avatar">
-                        <h5 id="chat-receiver-name" class="mb-0"></h5>
-                    </div>
-                    <div class="chat-messages-box flex-grow-1 overflow-auto p-4" id="chat-container">
-                        </div>
-                    <form id="chat-form" class="chat-input-form p-3 bg-light border-top">
-                        <input type="text" id="message-input" class="form-control" placeholder="Escribe tu mensaje..." autocomplete="off">
-                        <input type="hidden" id="sender-id" value="<%= user._id %>">
-                        <input type="hidden" id="receiver-id">
-                        <button type="submit" class="btn btn-primary d-flex align-items-center">
-                            <i class="fas fa-paper-plane me-2"></i> Enviar
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-<div class="modal fade" id="deleteChatModal" tabindex="-1" role="dialog" aria-labelledby="deleteChatModalTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteChatModalTitle">Borrar Mensaje</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-          <span aria-hidden="true">&times;</span>
-        </button>
       </div>
-      <form id="delete-chat-form">
-        <div class="modal-body">
-          <!-- Input oculto para almacenar el ID del mensaje -->
-          <input type="hidden" name="message_id" id="delete-message-id"> 
-          <p>¿Estás seguro que quieres borrar este mensaje?</p>
-          <p><b id="delete-message" class="text-primary"></b></p> 
+      <div id="page-content-wrapper">
+        <div class="container-fluid py-4">
+          <div class="chat-main-section d-flex flex-column h-100">
+            <div id="welcome-chat" class="initial-chat-message">
+              <p class="welcome-heading">
+                Selecciona un usuario para iniciar un chat
+              </p>
+            </div>
+
+            <div id="chat-section" class="d-none h-100 flex-column">
+              <div
+                class="chat-header py-3 px-4 d-flex align-items-center bg-light border-bottom"
+              >
+                <img
+                  id="chat-receiver-image"
+                  src=""
+                  class="rounded-circle user-avatar me-3"
+                  alt="Receiver Avatar"
+                />
+                <h5 id="chat-receiver-name" class="mb-0"></h5>
+              </div>
+              <div
+                class="chat-messages-box flex-grow-1 overflow-auto p-4"
+                id="chat-container"
+              ></div>
+              <form
+                id="chat-form"
+                class="chat-input-form p-3 bg-light border-top"
+              >
+                <input
+                  type="text"
+                  id="message-input"
+                  class="form-control"
+                  placeholder="Escribe tu mensaje..."
+                  autocomplete="off"
+                />
+                <input type="hidden" id="sender-id" value="<%= user._id %>" />
+                <input type="hidden" id="receiver-id" />
+                <button
+                  type="submit"
+                  class="btn btn-primary d-flex align-items-center"
+                >
+                  <i class="fas fa-paper-plane me-2"></i> Enviar
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger" aria-label="Confirmar eliminación del mensaje">Eliminar</button>
-        </div>
-      </form>
+      </div>
     </div>
-  </div>
-</div>
+    <div
+      class="modal fade"
+      id="deleteChatModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="deleteChatModalTitle"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteChatModalTitle">
+              Borrar Mensaje
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            ></button>
+          </div>
+          <form id="delete-chat-form">
+            <div class="modal-body">
+              <!-- Input oculto para almacenar el ID del mensaje -->
+              <input type="hidden" name="message_id" id="delete-message-id" />
+              <p>¿Estás seguro que quieres borrar este mensaje?</p>
+              <p><b id="delete-message" class="text-primary"></b></p>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                aria-label="Confirmar eliminación del mensaje"
+              >
+                Eliminar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
+    <%- include('layouts/footer.ejs') %>
 
-<%- include('layouts/footer.ejs') %>
+    <script>
+      // Archivo: public/js/dashboard.js
 
-<script>
-$(document).ready(function() {
-    var sender_id = $('#sender-id').val();
-    var receiver_id; // Se inicializa cuando se hace clic en un usuario
-    var socket = io('/user-namespace', {
-        auth: { token: sender_id }
-    });
+      $(document).ready(function () {
+        const sender_id = $("#sender-id").val();
+        let receiver_id;
+        const socket = io("/user-namespace", {
+          auth: { token: sender_id },
+        });
 
-    // Función para hacer scroll al final del chat
-    function scrollToBottom() {
-        var chatContainer = $('#chat-container');
-        chatContainer.scrollTop(chatContainer.prop("scrollHeight"));
-    }
+        // Utilidades
+        function scrollToBottom() {
+          const chatContainer = $("#chat-container");
+          chatContainer.scrollTop(chatContainer.prop("scrollHeight"));
+        }
 
-    // Función para añadir un mensaje al chat
-   function appendMessage(data, isCurrentUser) {
-    function escapeHtml(text) {
-        return text
+        function escapeHtml(text) {
+          return text
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
-    }
+        }
 
-    var messageClass = isCurrentUser ? 'current-user-chat' : 'distance-user-chat';
-    var alignmentClass = isCurrentUser ? 'justify-content-end' : 'justify-content-start';
+        function appendMessage(data, isCurrentUser) {
+          const messageId = data._id ?? "local-" + Date.now();
 
-    var messageId = data._id || ('local-' + Date.now());
+          // Validar ID para evitar errores al borrar
+          if (
+            !messageId.startsWith("local-") &&
+            !/^[a-f\d]{24}$/i.test(messageId)
+          ) {
+            console.warn("⚠️ ID no válido, se ignora el mensaje:", messageId);
+            return;
+          }
 
-    var iconHtml = isCurrentUser ? 
-        `<i class="fa fa-trash delete-chat-icon" title="Eliminar mensaje" data-message-id="${messageId}" data-message-text="${escapeHtml(data.message || '')}" style="cursor:pointer; margin-left:8px;"></i>` 
-        : '';
+          const messageClass = isCurrentUser
+            ? "current-user-chat"
+            : "distance-user-chat";
+          const alignmentClass = isCurrentUser
+            ? "justify-content-end"
+            : "justify-content-start";
 
-    var html = `
-        <div class="d-flex mb-2 message-row ${alignmentClass}" id="chat-message-${messageId}"> 
-            <div class="chat-message-bubble ${messageClass}">
-                <p class="mb-0">${escapeHtml(data.message)}</p>
-            </div>
-            ${iconHtml}
-        </div>`;
+          const iconHtml = isCurrentUser
+            ? `<i class="fa fa-trash delete-chat-icon" title="Eliminar mensaje" data-message-id="${messageId}" data-message-text="${escapeHtml(
+                data.message || ""
+              )}" style="cursor:pointer; margin-left:8px;"></i>`
+            : "";
 
-    $('#chat-container').append(html);
-    scrollToBottom();
-}
+          const html = `
+    <div class="d-flex mb-2 message-row ${alignmentClass}" id="chat-message-${messageId}">
+      <div class="chat-message-bubble ${messageClass}">
+        <p class="mb-0">${escapeHtml(data.message)}</p>
+      </div>
+      ${iconHtml}
+    </div>`;
 
+          $("#chat-container").append(html);
+          scrollToBottom();
+        }
 
-    // Cargar chats antiguos al seleccionar un usuario
-    $('.list-group-item').click(function() {
-        console.log("Valores para /get-old-chats (antes de la llamada AJAX):");
-        console.log("  sender_id (desde #sender-id):", sender_id);
-        
-        $('.list-group-item').removeClass('active');
-        $(this).addClass('active');
+        // Evento: seleccionar usuario
+        $(document)
+          .off("click", ".list-group-item")
+          .on("click", ".list-group-item", function () {
+            $(".list-group-item").removeClass("active");
+            $(this).addClass("active");
 
-        receiver_id = $(this).attr('data-id');
-        var receiver_name = $(this).attr('data-name');
-        var receiver_image = $(this).attr('data-image');
-        
-        console.log("  receiver_id (desde data-id):", receiver_id); // Log después de obtenerlo
+            receiver_id = $(this).data("id");
+            const receiver_name = $(this).data("name");
+            const receiver_image = $(this).data("image");
 
-        $('#chat-receiver-name').text(receiver_name);
-        $('#chat-receiver-image').attr('src', '/images/' + receiver_image);
-        $('#receiver-id').val(receiver_id); // Poner el ID en el input oculto para el formulario de chat
+            $("#chat-receiver-name").text(receiver_name);
+            $("#chat-receiver-image").attr("src", "/images/" + receiver_image);
+            $("#receiver-id").val(receiver_id);
 
-        $('#welcome-chat').addClass('d-none');
-        $('#chat-section').removeClass('d-none');
-        $('#chat-container').empty(); // Limpiar chat anterior
+            $("#welcome-chat").addClass("d-none");
+            $("#chat-section").removeClass("d-none");
+            $("#chat-container").empty();
 
-        // Cargar chats antiguos
-        $.ajax({
-            url: '/get-old-chats',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ sender_id: sender_id, receiver_id: receiver_id }),
-            success: function(res) {
+            $.ajax({
+              url: "/get-old-chats",
+              method: "POST",
+              contentType: "application/json",
+              data: JSON.stringify({ sender_id, receiver_id }),
+              success: function (res) {
                 if (res.success) {
-                    if (res.chats.length > 0) {
-                        res.chats.forEach(function(chat) {
-                            var isCurrentUser = (chat.sender_id === sender_id);
-                            appendMessage(chat, isCurrentUser);
-                        });
-                    } else {
-                        $('#chat-container').append('<div class="initial-chat-message"><p>¡Sé el primero en saludar!</p></div>');
-                    }
-                    scrollToBottom();
+                  if (res.chats.length > 0) {
+                    res.chats.forEach((chat) => {
+                      appendMessage(chat, chat.sender_id === sender_id);
+                    });
+                  } else {
+                    $("#chat-container").append(
+                      '<div class="initial-chat-message"><p>¡Sé el primero en saludar!</p></div>'
+                    );
+                  }
+                  scrollToBottom();
                 } else {
-                    alert(res.msg);
+                  alert(res.msg);
                 }
-            },
-            error: function(xhr) {
-                console.error("Error en la solicitud AJAX /get-old-chats:", xhr.responseText);
-                if (xhr.responseJSON?.msg === "Sesión expirada. Por favor inicia sesión de nuevo.") {
-                    window.location.href = '/';
-                } else {
-                    alert('Error al cargar chats antiguos: ' + (xhr.responseJSON?.msg || 'Error desconocido.'));
-                }
-            }
-        });
-    });
+              },
+              error: function (xhr) {
+                alert(
+                  "Error al cargar chats antiguos: " +
+                    (xhr.responseJSON?.msg || "Error desconocido.")
+                );
+              },
+            });
+          });
 
-$('#chat-form').submit(function(e) {
-    e.preventDefault();
+        // Enviar mensaje
+        $("#chat-form").submit(function (e) {
+          e.preventDefault();
+          const message = $("#message-input").val();
+          if (message.trim() === "") return;
 
-    var message = $('#message-input').val().trim();
-    if (!message) return;
-
-    if (receiver_id) {
-        // 👇 Logs de depuración
-        console.log(">>> Enviando mensaje:");
-        console.log("sender_id:", sender_id);
-        console.log("receiver_id:", receiver_id);
-        console.log("message:", message);
-
-        var tempId = 'local-' + Date.now();
-
-        var messageData = {
+          const tempId = "local-" + Date.now();
+          const messageData = {
+            // Estos datos son para la actualización INMEDIATA en el lado del remitente
             _id: tempId,
             sender_id: sender_id,
             receiver_id: receiver_id,
             message: message,
-            createdAt: new Date().toISOString()
-        };
+            createdAt: new Date().toISOString(),
+          };
 
-        appendMessage(messageData, true);
-        scrollToBottom();
+          appendMessage(messageData, true); // Añadir a la vista del remitente con el ID temporal
+          scrollToBottom();
+          $("#message-input").val("");
 
-        socket.emit('newChat', messageData);
-// Guardar mensaje en la base de datos a través de AJAX
-let bodyToSend = Object.assign({}, messageData); // clonar
-delete bodyToSend._id; // eliminar _id antes de enviar
+          // Petición AJAX para guardar el mensaje en la base de datos
+          $.ajax({
+            url: "/save-chat",
+            method: "POST",
+            // IMPORTANTE: Envía solo los datos necesarios para guardar (el servidor ya ignora el _id temporal)
+            data: {
+              sender_id: sender_id,
+              receiver_id: receiver_id,
+              message: message,
+            },
+            success: function (res) {
+              if (res.success) {
+                const realId = res.data._id; // <-- Aquí obtenemos el ID REAL de MongoDB
 
-$.ajax({
-    url: '/save-chat',
-    method: 'POST',
-    contentType: 'application/json',
-    data: JSON.stringify(bodyToSend),
-    success: function(res) {
-        if (!res.success) {
-            alert('Error al guardar el mensaje: ' + res.msg);
-            $('#chat-message-' + messageData._id).remove();
-        } else {
-            var realId = res.data._id;
-            $('#chat-message-' + messageData._id).attr('id', 'chat-message-' + realId);
-            $('#chat-message-' + realId + ' .delete-chat-icon').attr('data-message-id', realId);
-            messageData._id = realId;
-        }
-    },
-    error: function(err) {
-        const msg = err?.responseJSON?.msg || err?.responseText || 'Error desconocido';
-        alert('Error al guardar el mensaje: ' + msg);
-        console.error("Error al guardar mensaje:", err);
-        $('#chat-message-' + messageData._id).remove();
-    }
-});
+                // Actualizar el ID del elemento en el DOM del remitente
+                $("#chat-message-" + tempId).attr(
+                  "id",
+                  "chat-message-" + realId
+                );
+                // También actualizar el data-message-id para el icono de borrar
+                $("#chat-message-" + realId + " .delete-chat-icon").attr(
+                  "data-message-id",
+                  realId
+                );
 
+                // AHORA, EMITE EL EVENTO SOCKET.IO CON EL ID REAL DE MONGODB
+                // 'res.data' contiene el objeto de chat guardado con su _id real
+                socket.emit("newChat", res.data); // <--- ESTO ES EL CAMBIO CLAVE
 
-        $('#message-input').val('');
-    } else {
-        alert('Por favor, selecciona un usuario para chatear.');
-    }
-});
-
-
-
-
-    // Recibir nuevo chat en tiempo real (Socket.IO)
-    socket.on('loadNewChat', function(data) {
-        // Solo añade el mensaje si es para el usuario actual y del chat activo
-        var isCurrentUser = (data.sender_id === sender_id); 
-        if ((data.sender_id === sender_id && data.receiver_id === receiver_id) || 
-            (data.sender_id === receiver_id && data.receiver_id === sender_id)) {
-            appendMessage(data, isCurrentUser); // 'data' debe contener el message, _id, sender_id, etc.
-        }
-    });
-
-    // Actualizar estado de usuario a online
-    socket.on('getOnlineUser', function(data) {
-        $('#' + data.user_id + '-status .status-text').text('Conectado');
-        $('#' + data.user_id + '-status').removeClass('offline-status').addClass('online-status');
-    });
-
-    // Actualizar estado de usuario a offline
-    socket.on('getOfflineUser', function(data) {
-        $('#' + data.user_id + '-status .status-text').text('Desconectado');
-        $('#' + data.user_id + '-status').removeClass('online-status').addClass('offline-status');
-    });
-
-    // Cargar lista de usuarios online al conectar Socket.IO
-    socket.on('onlineUsersList', function(data) {
-        data.onlineUserIds.forEach(function(userId) {
-            $('#' + userId + '-status .status-text').text('Conectado');
-            $('#' + userId + '-status').removeClass('offline-status').addClass('online-status');
+                console.log("✅ Mensaje guardado y ID actualizado:", realId);
+              } else {
+                console.error("❌ Error al guardar chat:", res.msg);
+                // Si falla, eliminar el mensaje temporal del remitente
+                $("#chat-message-" + tempId).remove();
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error("❌ Error AJAX al guardar chat:", error);
+              // Si hay un error, eliminar el mensaje temporal del remitente
+              $("#chat-message-" + tempId).remove();
+            },
+          });
         });
-    });
-
-     socket.on('messageSaved', function(savedMessage) {
-    var tempId = savedMessage.tempId;
-    var realId = savedMessage._id;
-
-    if (tempId) {
-        // Actualiza el ID del contenedor del mensaje
-        $('#chat-message-' + tempId).attr('id', 'chat-message-' + realId);
-        // Actualiza el data-message-id del ícono de borrar
-        $('#chat-message-' + realId + ' .delete-chat-icon').attr('data-message-id', realId);
-    } else {
-        // Si no hay tempId, simplemente agrega el mensaje (por si es nuevo)
-        appendMessage(savedMessage, savedMessage.sender_id === sender_id);
-    }
-    });
-
-
-    // *** LÓGICA PARA BORRAR MENSAJES ***
-
-    function esObjectIdValido(id) {
-        return /^[0-9a-fA-F]{24}$/.test(id);
-}
-    $('#chat-container').on('click', '.delete-chat-icon', function() {
-        var messageId = $(this).data('message-id'); // Obtiene el ID del mensaje del atributo data-
-        var messageText = $(this).data('message-text'); // Obtiene el texto del mensaje del atributo data-
-        
-        if (!messageId) {
-            alert('No se pudo encontrar el ID del mensaje a borrar.');
-            return;
-        }
-
-        // 2. Rellenar el modal con la información y mostrarlo
-        $('#delete-message-id').val(messageId); // Pone el ID en el input oculto del modal
-        $('#delete-message').text(messageText); // Muestra el texto del mensaje en el modal
-        $('#deleteChatModal').modal('show'); // Muestra el modal de Bootstrap
-    });
-
-    // 3. Manejar el clic en el botón "Eliminar" dentro del modal
-    // Usamos el selector del botón de peligro dentro del modal.
-    $('#deleteChatModal').find('.btn-danger').on('click', function() {
-  var messageIdToDelete = $('#delete-message-id').val();
-  console.log("ID a borrar:", messageIdToDelete); // Depura aquí
-
-  if (!messageIdToDelete) {
-    alert('Error: ID del mensaje no encontrado.');
-    return;
-  }
-
-  $.ajax({
-    url: '/delete-chat',
-    method: 'POST',
-    contentType: 'application/json',
-    data: JSON.stringify({ message_id: messageIdToDelete }),
-    success: function(res) {
-      if (res.success) {
-        $('#chat-message-' + messageIdToDelete).remove();
-        socket.emit('messageDeleted', { 
-          message_id: messageIdToDelete,
-          receiver_id: receiver_id,
-          sender_id: sender_id
+        // Eliminar mensaje desde modal
+        $("#chat-container").on("click", ".delete-chat-icon", function () {
+          const messageId = $(this).data("message-id");
+          const messageText = $(this).data("message-text");
+          $("#delete-message-id").val(messageId);
+          $("#delete-message").text(messageText);
+          $("#deleteChatModal").modal("show");
         });
-        $('#deleteChatModal').modal('hide');
-      } else {
-        alert('Error al eliminar: ' + res.msg);
-      }
-    },
-    error: function(xhr) {
-      console.error("Error completo:", xhr.responseText);
-      alert('Error al eliminar. Detalles en consola.');
-    }
-  });
-});
 
+        $("#deleteChatModal .btn-danger").on("click", function () {
+          const messageId = $("#delete-message-id").val();
+          if (!messageId) return;
 
-    // 4. Manejar el evento de mensaje borrado en tiempo real (para otros usuarios en el mismo chat)
-    socket.on('messageRemoved', function(data) {
-        // Solo remover si el mensaje borrado es relevante para este chat activo
-        if (data.message_id && $('#chat-message-' + data.message_id).length) {
-            // Verificar si el mensaje borrado pertenece a este chat particular
-            if ((data.sender_id === sender_id && data.receiver_id === receiver_id) || 
-                (data.sender_id === receiver_id && data.receiver_id === sender_id)) {
-                $('#chat-message-' + data.message_id).remove();
+          $.ajax({
+            url: "/delete-chat",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ message_id: messageId }),
+            success: function (res) {
+              if (res.success) {
+                $("#chat-message-" + messageId).remove();
+                socket.emit("messageDeleted", {
+                  message_id: messageId,
+                  receiver_id,
+                  sender_id,
+                });
+                $("#deleteChatModal").modal("hide");
+              } else {
+                alert(res.msg);
+              }
+            },
+            error: function () {
+              alert("Error al eliminar mensaje.");
+            },
+          });
+        });
+
+        // Recepción de eventos en tiempo real
+        socket.on("loadNewChat", function (data) {
+          console.log("📨 loadNewChat recibido:", data);
+          if (
+            (data.sender_id === sender_id &&
+              data.receiver_id === receiver_id) ||
+            (data.sender_id === receiver_id && data.receiver_id === sender_id)
+          ) {
+            appendMessage(data, data.sender_id === sender_id);
+          }
+        });
+
+        socket.on("messageRemoved", function (data) {
+          const id = data.message_id;
+          let attempts = 10;
+          console.log("📩 EVENTO messageRemoved RECIBIDO:", data);
+          const tryRemove = () => {
+            const $el = $("#chat-message-" + id);
+            if ($el.length) {
+              $el.remove();
+              console.log("✅ Mensaje eliminado del DOM:", id);
+            } else if (--attempts > 0) {
+              setTimeout(tryRemove, 300);
+            } else {
+              console.warn(
+                "❌ No se encontró el mensaje en el DOM tras varios intentos:",
+                id
+              );
             }
-        }
-    });
+          };
 
-});
-</script>
+          console.log("📩 EVENTO RECIBIDO - messageRemoved:", data);
+          tryRemove();
+        });
 
-</body>
+        socket.on("getOnlineUser", function (data) {
+          $("#" + data.user_id + "-status .status-text").text("Conectado");
+          $("#" + data.user_id + "-status")
+            .removeClass("offline-status")
+            .addClass("online-status");
+        });
+
+        socket.on("getOfflineUser", function (data) {
+          $("#" + data.user_id + "-status .status-text").text("Desconectado");
+          $("#" + data.user_id + "-status")
+            .removeClass("online-status")
+            .addClass("offline-status");
+        });
+
+        socket.on("onlineUsersList", function (data) {
+          data.onlineUserIds.forEach(function (userId) {
+            $("#" + userId + "-status .status-text").text("Conectado");
+            $("#" + userId + "-status")
+              .removeClass("offline-status")
+              .addClass("online-status");
+          });
+        });
+
+        socket.on("messageSaved", function (savedMessage) {
+          const tempId = savedMessage.tempId;
+          const realId = savedMessage._id;
+
+          if (tempId) {
+            $("#chat-message-" + tempId).attr("id", "chat-message-" + realId);
+            $("#chat-message-" + realId + " .delete-chat-icon").attr(
+              "data-message-id",
+              realId
+            );
+          } else {
+            appendMessage(savedMessage, savedMessage.sender_id === sender_id);
+          }
+        });
+      });
+    </script>
+  </body>
 </html>
